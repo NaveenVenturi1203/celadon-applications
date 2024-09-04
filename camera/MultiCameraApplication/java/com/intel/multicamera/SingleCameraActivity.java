@@ -69,7 +69,7 @@ public class SingleCameraActivity extends AppCompatActivity {
     private RoundedThumbnailView mRoundedThumbnailView;
     private BroadcastReceiver mUsbReceiver;
     private long mLastClickTime = 0;
-
+    private boolean isSwitchingActivity = false;
     private SettingsPrefUtil Fragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +191,7 @@ public class SingleCameraActivity extends AppCompatActivity {
                 MultiCamera ic_camera = MultiCamera.getInstance();
                 ic_camera.setIsCameraOrSurveillance(1);
                 unregisterReceiver(mUsbReceiver);
+                isSwitchingActivity = true;
                 Intent intent = new Intent(SingleCameraActivity.this, MultiViewActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -422,6 +423,7 @@ public class SingleCameraActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+    Log.v(TAG, "onPause");
         closeCamera();
         super.onPause();
     }
@@ -429,10 +431,19 @@ public class SingleCameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, " onResume");
+        Log.v(TAG, " onResume");
+        isSwitchingActivity = false;
         MultiCamera ic_cam = MultiCamera.getInstance();
         ic_cam.setIsCameraOrSurveillance(0);
 
         OpenCamera();
     }
-}
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v(TAG, "onStop");
+        if(isSwitchingActivity == false)
+            System.exit(0);
+        }
+    }

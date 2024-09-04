@@ -72,6 +72,7 @@ public class MultiViewActivity extends AppCompatActivity {
 
     private int isDialogShown;
 
+    private boolean isSwitchingActivity = false;
     private SettingsPrefUtil Fragment, Fragment1, Fragment2, Fragment3;
 
     public String[] CameraIds;
@@ -330,6 +331,7 @@ public class MultiViewActivity extends AppCompatActivity {
                  closeCamera();
                  ic_camera.setIsCameraOrSurveillance(0);
                  unregisterReceiver(mUsbReceiver);
+                 isSwitchingActivity = true;
                  Intent intent = new Intent(MultiViewActivity.this, SingleCameraActivity.class);
                  intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                  startActivity(intent);
@@ -376,6 +378,7 @@ public class MultiViewActivity extends AppCompatActivity {
                 closeCamera();
                 ic_camera.setIsCameraOrSurveillance(0);
                 unregisterReceiver(mUsbReceiver);
+                isSwitchingActivity = true;
                 Intent intent = new Intent(MultiViewActivity.this, SingleCameraActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -422,6 +425,7 @@ public class MultiViewActivity extends AppCompatActivity {
                 ic_camera.setOpenCameraId(2);
                 closeCamera();
                 unregisterReceiver(mUsbReceiver);
+                isSwitchingActivity = true;
                 Intent intent = new Intent(MultiViewActivity.this, SingleCameraActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -470,6 +474,7 @@ public class MultiViewActivity extends AppCompatActivity {
                 ic_camera.setOpenCameraId(3);
                 closeCamera();
                 unregisterReceiver(mUsbReceiver);
+                isSwitchingActivity = true;
                 Intent intent = new Intent(MultiViewActivity.this, SingleCameraActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -643,7 +648,9 @@ public class MultiViewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, " onResume");
+
+        isSwitchingActivity = false;
+        Log.v(TAG, "onResume");
         startCamera();
         hideCameraSwitchButton();
     }
@@ -672,10 +679,18 @@ public class MultiViewActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        System.out.println("onPause");
+        Log.v(TAG, "onPause");
         closeCamera();
         super.onPause();
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v(TAG, "onStop");
+	if(isSwitchingActivity == false)
+	System.exit(0);
     }
 
     public void settingView(View view) {
@@ -1285,6 +1300,7 @@ public class MultiViewActivity extends AppCompatActivity {
 
         closeCamera();
         unregisterReceiver(mUsbReceiver);
+        isSwitchingActivity = true;
         Intent intent = new Intent(MultiViewActivity.this, SingleCameraActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
